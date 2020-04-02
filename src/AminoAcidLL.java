@@ -27,12 +27,12 @@ class AminoAcidLL{
    * If there is no next node, add a new node to the list that would contain the codon. 
    */
   private void addCodon(String inCodon) {
-    if (this.next == null) {
-      next = new AminoAcidLL(inCodon);
-    } else if (AminoAcidResources.getAminoAcidFromCodon(inCodon) == next.aminoAcid) {
-        this.incrCodons(inCodon);
-    } else{
+    if (AminoAcidResources.getAminoAcidFromCodon(inCodon) == aminoAcid) {
+      incrCodons(inCodon);
+    } else if (this.next != null) {
       next.addCodon(inCodon);
+    } else{
+      next = new AminoAcidLL(inCodon);
     }
   }
 
@@ -40,7 +40,11 @@ class AminoAcidLL{
   /********************************************************************************************/
   /* Shortcut to find the total number of instances of this amino acid */
   private int totalCount(){
-    return 0;
+    int sum = 0;
+    for(int i = 0; i < counts.length; i++){
+      sum+=counts[i];
+    }
+    return sum;
   }
 
   /********************************************************************************************/
@@ -80,7 +84,19 @@ class AminoAcidLL{
   /********************************************************************************************/
   /* Recursively returns the total list of amino acids in the order that they are in in the linked list. */
   public char[] aminoAcidList(){
-    return new char[]{};
+    char list[] = new char[LListLength(this)];
+    aminoAcidList(this,0,list);
+    return list;
+  }
+
+  public char[] aminoAcidList(AminoAcidLL head, int count, char[] list){
+    if(head.next == null){
+      list[count] = head.aminoAcid;
+      return list;
+    }
+      list[count] = head.aminoAcid;
+      return aminoAcidList(head.next,count++,list);
+
   }
 
   /********************************************************************************************/
@@ -105,23 +121,32 @@ class AminoAcidLL{
       AminoAcidLL iterator = new AminoAcidLL(inSequence.substring(0,3));
      // inSequence = inSequence.substring(count);
       while(count < inSequence.length()){
-          inSequence = inSequence.substring(count);
+        //condition for * to break from the loop
+        inSequence = inSequence.substring(count);
           iterator.addCodon(inSequence.substring(0, 3));
-         // count+=3;
-
       }
-
       return iterator;
-
-        //AminoAcidResources.getAminoAcidFromCodon(inSequence);
   }
 
 
-  /********************************************************************************************/
+  /**************************************************************************************************/
   /* sorts a list by amino acid character*/
-  public static AminoAcidLL sort(AminoAcidLL inList){
-    return null;
+  public static AminoAcidLL sort(AminoAcidLL inList) {
+    int n = inList.LListLength(inList);
+    AminoAcidLL iterator = inList;
+    for (int i = 0; i < n - 1; i++){
+      for (int j = 0; j < n - i - 1; j++){
+        if (iterator.next != null && iterator.aminoAcid > iterator.next.aminoAcid) {
+          AminoAcidLL temp = iterator.next;
+          iterator.next = iterator;
+          iterator = temp;
+        }
+      }
+    }
+
+    return iterator;
   }
+  /************************************ Helper Methods **********************************************/
 
   public void incrCodons(String c){
     //increase appropriate codon by traversing the list
@@ -129,5 +154,15 @@ class AminoAcidLL{
         if(codons[i].equals(c))
             counts[i]++;
       }
+  }
+
+  public int LListLength(AminoAcidLL head){
+    int l = 0;
+    AminoAcidLL iterator = head;
+    while(iterator != null){
+      iterator = iterator.next;
+      l++;
+    }
+    return l;
   }
 }

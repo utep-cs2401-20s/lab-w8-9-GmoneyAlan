@@ -87,7 +87,7 @@ class AminoAcidLL{
       diff = diff + inList.totalCount();
     }else
       diff = diff + (inList.totalDiff(inList2));
-      return aminoAcidCompare(inList,inList2,diff);
+      return aminoAcidCompare(inList.next,inList2.next,diff);
   }
 
   /********************************************************************************************/
@@ -105,7 +105,7 @@ class AminoAcidLL{
     if(inList == null && inList2 == null) {
       return diff;
     } else if(inList == null){
-      diff = diff + inList.codonDiff(inList2);
+      diff = diff + codonDiff(inList2);
       codonCompare(inList,inList2.next,diff);
     } else if(inList2 == null){
       diff = diff + inList.codonDiff(inList2);

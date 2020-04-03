@@ -71,17 +71,50 @@ class AminoAcidLL{
   /* Recursive method that finds the differences in **Amino Acid** counts. 
    * the list *must* be sorted to use this method */
   public int aminoAcidCompare(AminoAcidLL inList){
-    //this.totalCount() - inList.totalCount();
-    return 0;
+    int diff = 0;
+    if(inList.isSorted() && this.isSorted()){
+      diff = aminoAcidCompare(this, inList, diff);
+    }
+    return diff;
+  }
+  public int aminoAcidCompare(AminoAcidLL inList, AminoAcidLL inList2, int diff){//inList : A>B>C>D
+    if(inList == null && inList2 == null){                                       //inList2: A>B>C>D>E
+      return diff;
+    } else if(inList == null){
+      diff = diff - inList2.totalCount();
+      return aminoAcidCompare(inList, inList2, diff);
+    } else if(inList2 == null){
+      diff = diff + inList.totalCount();
+    }else
+      diff = diff + (inList.totalDiff(inList2));
+      return aminoAcidCompare(inList,inList2,diff);
   }
 
   /********************************************************************************************/
   /* Same ad above, but counts the codon usage differences
    * Must be sorted. */
   public int codonCompare(AminoAcidLL inList){
-    return 0;
+    int diff = 0;
+    if(inList.isSorted()){
+      diff = codonCompare(this, inList, diff);
+    }
+    return diff;
   }
 
+  public int codonCompare(AminoAcidLL inList, AminoAcidLL inList2, int diff){
+    if(inList == null && inList2 == null) {
+      return diff;
+    } else if(inList == null){
+      diff = diff + inList.codonDiff(inList2);
+      codonCompare(inList,inList2.next,diff);
+    } else if(inList2 == null){
+      diff = diff + inList.codonDiff(inList2);
+      return codonCompare(inList.next,inList2,diff);
+    }
+      diff = diff + inList.codonDiff(inList2);
+      return codonCompare(inList.next, inList2.next, diff);
+
+  }
 
   /********************************************************************************************/
   /* Recursively returns the total list of amino acids in the order that they are in in the linked list. */
@@ -121,10 +154,10 @@ class AminoAcidLL{
   /********************************************************************************************/
   /* recursively determines if a linked list is sorted or not */
   public boolean isSorted(){
-    if(this == null || next == null){
+    if(next == null){
       return true;
     }
-    return (this.aminoAcid > next.aminoAcid && next.isSorted());
+    return (this.aminoAcid < next.aminoAcid && next.isSorted());
   }
 
 
@@ -133,7 +166,9 @@ class AminoAcidLL{
   public static AminoAcidLL createFromRNASequence(String inSequence){
       //dasdvscvcxv
       int count = 3;
-      AminoAcidLL iterator = new AminoAcidLL(inSequence.substring(0,3)); //head das
+      if(inSequence.length() < 3)
+          return null;
+      AminoAcidLL iterator = new AminoAcidLL(inSequence.substring(0,3)); //head "das"
 
       while(count < inSequence.length()){
         //condition for * to break from the loop
@@ -164,7 +199,7 @@ class AminoAcidLL{
     AminoAcidLL left = sort(inList);
 
     // Apply mergeSort on right list
-    AminoAcidLL right = sort(mid.next);
+    AminoAcidLL right = sort(mNext);
 
     // Merge the left and right lists
     AminoAcidLL sortedlist = merge(left, right);
@@ -221,16 +256,5 @@ class AminoAcidLL{
       l++;
     }
     return l;
-  }
-
-  public void swap(AminoAcidLL min, AminoAcidLL swap){//move max value to the right
-    AminoAcidLL temp = swap;
-    swap.aminoAcid = this.aminoAcid;
-    swap.codons = this.codons;
-    swap.counts = this.counts;
-
-    min.aminoAcid = temp.aminoAcid;
-    min.codons = temp.codons;
-    min.counts = temp.counts;
   }
 }

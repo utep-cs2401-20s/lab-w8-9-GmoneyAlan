@@ -130,7 +130,8 @@ class AminoAcidLL{
       return list;
     }
       list[count] = head.aminoAcid;
-      return aminoAcidList(head.next,count++,list);
+      count++;
+      return aminoAcidList(head.next,count,list);
 
   }
 
@@ -148,7 +149,8 @@ class AminoAcidLL{
      return oof;
    }
     oof[count] = head.aminoAcid;
-    return aminoAcidCounts(head.next,count++,oof);
+    count++;
+    return aminoAcidCounts(head.next,count,oof);
   }
 
   /********************************************************************************************/
